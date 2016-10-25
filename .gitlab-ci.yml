@@ -1,0 +1,25 @@
+image: ahardingcouk/nodejs-dockerfile
+
+stages:
+  - build
+  - test
+  - deploy
+
+before_script:
+  - npm set progress=false
+  - npm install > npm-install.log 2>&1
+  - gzip npm-install.log
+
+tests_job:
+  stage: test
+  script:
+    - npm set progress=true
+    - npm run lint
+    - npm run tests
+  tags:
+    - docker
+  artifacts:
+    paths:
+      - coverage/
+      - npm-install.log
+    expire_in: 72 hrs
